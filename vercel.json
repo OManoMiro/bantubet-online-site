@@ -1,4 +1,10 @@
 {
+  "builds": [
+    { "src": "rais/**/*", "use": "@vercel/static" }
+  ],
+  "routes": [
+    { "src": "/(.*)", "dest": "rais/$1" }
+  ],
   "redirects": [
     {
       "source": "/registo",
@@ -13,11 +19,6 @@
     {
       "source": "/bónus",
       "destination": "https://bantubet.co.ao/affiliates/?btag=2389446_1382348",
-      "permanent": true
-    },
-    {
-      "source": "/(.*)",
-      "destination": "https://bantubetangola.com/$1",
       "permanent": true
     }
   ]
