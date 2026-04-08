@@ -21,17 +21,24 @@
 
 <body>
   <!-- HEADER -->
-  <header class="header">
-    <div class="container header-content">
+  <header class="header dark-header">
+  <div class="container header-content">
+    <div class="logo-area">
       <img src="/images/logo-bantubet.png" alt="Logotipo Bantubet Angola" class="logo" width="160">
-      <nav class="menu">
-        <a href="#benefits">Benefícios</a>
-        <a href="#winners">Vencedores</a>
-        <a href="#offer">Oferta</a>
-        <a href="#contact">Contacto</a>
-      </nav>
+      <span class="app-label">App</span>
     </div>
-  </header>
+    <nav class="menu">
+      <a href="#benefits">Benefícios</a>
+      <a href="#winners">Vencedores</a>
+      <a href="#offer">Oferta</a>
+      <a href="#contact">Contacto</a>
+    </nav>
+    <div class="auth-buttons">
+      <a href="/registo" class="btn-register">REGISTO</a>
+      <a href="/login" class="btn-login">LOGIN</a>
+    </div>
+  </div>
+</header>
 
   <!-- HERO -->
   <section class="hero">
@@ -43,6 +50,9 @@
         <img src="/images/qrcode.png" alt="QR Code Bantubet" class="qrcode" width="120">
         <p class="qr-text">Escaneie o QR code e registe-se em segundos.</p>
       </div>
+      <div class="offer-timer">
+  <p>Oferta expira em <span id="timer">59:47</span></p>
+</div>
     </div>
   </section>
 
@@ -76,6 +86,31 @@
         <h3>Plataforma Mobile</h3>
         <p>Aposte onde estiver e acompanhe seus jogos com conforto total no seu telemóvel.</p>
       </div>
+    </div>
+  </div>
+</section>
+<section id="sports" class="sports-section container">
+  <h2>Apostas Desportivas</h2>
+  <div class="sports-grid">
+    <div class="sport-card">
+      <img src="/images/icons/futebol.png" alt="Futebol">
+      <h3>Futebol</h3>
+      <a href="/apostas/futebol" class="btn btn-cta">APOSTAR AGORA</a>
+    </div>
+    <div class="sport-card">
+      <img src="/images/icons/tenis.png" alt="Ténis">
+      <h3>Ténis</h3>
+      <a href="/apostas/tenis" class="btn btn-cta">APOSTAR AGORA</a>
+    </div>
+    <div class="sport-card">
+      <img src="/images/icons/pingpong.png" alt="Ping Pong">
+      <h3>Ping Pong</h3>
+      <a href="/apostas/pingpong" class="btn btn-cta">APOSTAR AGORA</a>
+    </div>
+    <div class="sport-card">
+      <img src="/images/icons/badminton.png" alt="Badminton">
+      <h3>Badminton</h3>
+      <a href="/apostas/badminton" class="btn btn-cta">APOSTAR AGORA</a>
     </div>
   </div>
 </section>
