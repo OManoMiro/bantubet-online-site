@@ -3,26 +3,18 @@
 <html lang="pt-ao" class="scroll-smooth">
 
 <head>
-
-
     <meta charset="UTF-8">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Kwanzabet Online | Registo Oficial 2026 + Iniciar Sessão + Apostas Desportivas e Casino Online + Aberto + Funil de Bônus Oficial + Criar conta + Kwanzabet.co.ao + Casino Online Oficial</title>
+    <title>Bantubet Online | Registo Oficial 2026 + Iniciar Sessão + Apostas Desportivas e Casino Online + Aberto + Funil de Bônus Oficial + Criar conta + Bantubet.co.ao + Elephantebet + zone + Kwanzabet + Premierbet + Ebet + Mobet + 1XBet + Betano + Casino Online Oficial</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
-
     <link rel="icon" type="image/png" href="/rais/icons/favicon.png" sizes="48x48">
 
     <style>
-
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
-
         body { font-family: 'Inter', sans-serif; }
-
     </style>
-
 </head>
 
 <body class="bg-white text-gray-900">
@@ -64,6 +56,42 @@
 
 <div class="h-20"></div>
 
+<div style="background:#f7f7f3; border-bottom:1px solid #ecece6;">
+  <div style="max-width:1120px; margin:0 auto; padding:10px 16px;">
+    <p id="last-updated" style="margin:0; text-align:center; color:#5f5f5f; font-size:0.92rem; line-height:1.4;">
+      Última atualização: carregando...
+    </p>
+  </div>
+</div>
+
+<script>
+  function formatLastUpdated() {
+    const now = new Date();
+    const day = String(now.getDate()).padStart(2, '0');
+    const month = now.toLocaleDateString('pt-PT', { month: 'long' });
+    const year = now.getFullYear();
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+
+    let country = 'Sistema';
+    try {
+      const locale = navigator.language || 'pt-PT';
+      const region = new Intl.Locale(locale).region;
+      if (region) {
+        const display = new Intl.DisplayNames(['pt'], { type: 'region' }).of(region);
+        country = display || region;
+      }
+    } catch (e) {}
+
+    const el = document.getElementById('last-updated');
+    if (el) {
+      el.textContent = `Última atualização: ${day} de ${month} de ${year}, ${hours}:${minutes} • País do sistema: ${country}`;
+    }
+  }
+
+  formatLastUpdated();
+  setInterval(formatLastUpdated, 1000);
+</script>
 
 <!--Hora Real-->
 
@@ -99,10 +127,6 @@
     startRealTimeClock(); 
   };
 </script>
-
-
-
-
 
 <div class="flex justify-center gap-4 mb-8">
   <div class="bg-gray-800 w-16 h-20 rounded-xl flex flex-col items-center justify-center border border-white/10">
