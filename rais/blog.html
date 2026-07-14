@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="pt-pt">
+<head>
+    <meta charset="UTF-8">
+    <title>Blog Bantubet</title>
+    <style>
+        .post { margin-bottom: 30px; border-bottom: 1px solid #ccc; padding-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <h1>Blog Bantubet</h1>
+    <div id="lista-posts">A carregar artigos...</div>
+
+    <script>
+        // URL onde o seu agente guarda os posts no Render
+        const API_URL = 'https://bantubet-seo-agent.onrender.com/data/posts.json';
+
+        fetch(API_URL)
+            .then(response => response.json())
+            .then(data => {
+                const container = document.getElementById('lista-posts');
+                container.innerHTML = data.map(post => `
+                    <div class="post">
+                        <h2>${post.titulo}</h2>
+                        <p>${post.resumo}</p>
+                        <div>${post.corpo}</div>
+                        <a href="${post.link}">Apostar agora na Bantubet</a>
+                    </div>
+                `).join('');
+            })
+            .catch(error => {
+                document.getElementById('lista-posts').innerHTML = "Erro ao carregar posts.";
+                console.error("Erro:", error);
+            });
+    </script>
+</body>
+</html>
