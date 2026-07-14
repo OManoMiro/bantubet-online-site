@@ -1,18 +1,28 @@
 <!DOCTYPE html>
-<html lang="pt-pt">
+<html lang="pt-ao">
 <head>
     <meta charset="UTF-8">
-    <title>Blog Bantubet</title>
-    <style>
-        .post { margin-bottom: 30px; border-bottom: 1px solid #ccc; padding-bottom: 20px; }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog Bantubet | Dicas e Prognósticos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-    <h1>Blog Bantubet</h1>
-    <div id="lista-posts">A carregar artigos...</div>
+<body class="bg-gray-50 text-gray-900">
+
+    <header class="bg-black py-8 border-b-4 border-[#F5C300] text-center shadow-xl">
+        <h1 class="text-white text-4xl font-black uppercase tracking-tight">Blog <span class="text-[#F5C300]">Bantubet</span></h1>
+        <a href="index.html" class="text-gray-400 text-sm hover:text-[#F5C300] transition-colors mt-2 inline-block">← Voltar ao Início</a>
+    </header>
+
+    <main class="max-w-4xl mx-auto py-12 px-6">
+        <div id="lista-posts" class="space-y-8">
+            <div class="text-center text-gray-500 py-20">
+                <div class="animate-spin inline-block w-8 h-8 border-4 border-t-[#F5C300] border-gray-200 rounded-full mb-4"></div>
+                <p>A carregar artigos exclusivos...</p>
+            </div>
+        </div>
+    </main>
 
     <script>
-        // URL onde o seu agente guarda os posts no Render
         const API_URL = 'https://bantubet-seo-agent.onrender.com/data/posts.json';
 
         fetch(API_URL)
@@ -20,16 +30,21 @@
             .then(data => {
                 const container = document.getElementById('lista-posts');
                 container.innerHTML = data.map(post => `
-                    <div class="post">
-                        <h2>${post.titulo}</h2>
-                        <p>${post.resumo}</p>
-                        <div>${post.corpo}</div>
-                        <a href="${post.link}">Apostar agora na Bantubet</a>
-                    </div>
+                    <article class="bg-white p-8 rounded-3xl shadow-lg border border-gray-100 hover:border-[#F5C300]/30 transition-all">
+                        <h2 class="text-3xl font-black text-gray-900 mb-4 uppercase">${post.titulo}</h2>
+                        <p class="text-gray-600 font-bold mb-4 italic text-lg">${post.resumo}</p>
+                        <div class="text-gray-700 leading-relaxed mb-8 prose prose-lg">${post.corpo}</div>
+                        <a href="${post.link}" class="inline-block bg-[#F5C300] text-black font-black px-10 py-4 rounded-2xl hover:scale-105 transition-transform shadow-[0_10px_20px_rgba(245,195,0,0.3)]">
+                            APOSTAR AGORA 🔥
+                        </a>
+                    </article>
                 `).join('');
             })
             .catch(error => {
-                document.getElementById('lista-posts').innerHTML = "Erro ao carregar posts.";
+                document.getElementById('lista-posts').innerHTML = `
+                    <div class="bg-red-50 p-8 rounded-2xl text-center border border-red-200">
+                        <p class="text-red-600 font-bold">Erro ao carregar posts. Por favor, verifique a ligação.</p>
+                    </div>`;
                 console.error("Erro:", error);
             });
     </script>
