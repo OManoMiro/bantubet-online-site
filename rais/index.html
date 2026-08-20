@@ -5,14 +5,64 @@
 <head>
 
 
+    <section id="consent-banner" class="fixed bottom-0 left-0 right-0 z-[110] hidden border-t border-white/10 bg-gray-950 px-4 py-4 text-white shadow-2xl" aria-label="Preferências de privacidade">
+      <div class="mx-auto flex max-w-6xl flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <p class="max-w-3xl text-sm text-gray-300">Usamos medição anónima para melhorar o site. Pode aceitar ou recusar esta medição.</p>
+        <div class="flex shrink-0 gap-3">
+          <button id="consent-reject" type="button" class="border border-white/30 px-4 py-2 text-sm font-bold text-white hover:border-white">Recusar</button>
+          <button id="consent-accept" type="button" class="bg-[#F5C300] px-4 py-2 text-sm font-black text-black hover:bg-yellow-400">Aceitar</button>
+        </div>
+      </div>
+    </section>
+
     <meta charset="UTF-8">
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  function hasAnalyticsConsent() {
+    return getAnalyticsConsent() === 'accepted';
+  }
+
+  function getAnalyticsConsent() {
+    try {
+      return window.localStorage.getItem('bantubet_analytics_consent');
+    } catch (error) {
+      return null;
+    }
+  }
+
     <meta name="description" content="Bantubet Angola: apostas desportivas, jogos online e suporte para jogadores em Angola.">
+    if (!hasAnalyticsConsent()) return;
     <link rel="canonical" href="https://www.bantubetangola.com/">
     <meta property="og:type" content="website">
     <meta property="og:locale" content="pt_AO">
-    <meta property="og:title" content="Bantubet Angola | Apostas desportivas e jogos online">
+  const consentBanner = document.getElementById('consent-banner');
+  if (getAnalyticsConsent() === null) {
+    consentBanner.classList.remove('hidden');
+  }
+
+  document.getElementById('consent-accept').addEventListener('click', () => {
+    try {
+      window.localStorage.setItem('bantubet_analytics_consent', 'accepted');
+    } catch (error) {
+      return;
+    }
+    consentBanner.classList.add('hidden');
+    trackEvent('consent_granted', { consent_type: 'analytics' });
+    trackEvent('page_view', { page_path: window.location.pathname });
+  });
+
+  document.getElementById('consent-reject').addEventListener('click', () => {
+    try {
+      window.localStorage.setItem('bantubet_analytics_consent', 'rejected');
+    } catch (error) {
+      return;
+    }
+    consentBanner.classList.add('hidden');
+  });
+
+  if (hasAnalyticsConsent()) {
+    trackEvent('page_view', { page_path: window.location.pathname });
+  }
     <meta property="og:description" content="Explore a Bantubet Angola e encontre apostas desportivas, jogos online e suporte.">
     <meta property="og:url" content="https://www.bantubetangola.com/">
     <meta name="twitter:card" content="summary">
