@@ -1,0 +1,37 @@
+{
+  "redirects": [
+    {
+      "source": "/(.*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "www.bantubetangola.com"
+        }
+      ],
+      "destination": "https://bantubetangola.com/$1",
+      "permanent": true
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/",
+      "destination": "/rais/index.html"
+    },
+    {
+      "source": "/blog.html",
+      "destination": "/rais/blog.html"
+    },
+    {
+      "source": "/robots.txt",
+      "destination": "/rais/robots.txt"
+    },
+    {
+      "source": "/sitemap.xml",
+      "destination": "/rais/sitemap.xml"
+    },
+    {
+      "source": "/artigos/:path*",
+      "destination": "/rais/artigos/:path*"
+    }
+  ]
+}

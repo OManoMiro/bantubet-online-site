@@ -2,12 +2,13 @@ from __future__ import annotations
 
 import os
 import re
+import secrets
+from html import escape
 from datetime import datetime
 from pathlib import Path
 from typing import Optional
-from urllib.parse import urlparse, urlunparse
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, Header, HTTPException
 from pydantic import BaseModel
 import subprocess
 
@@ -34,7 +35,6 @@ def slugify(text: str) -> str:
 def ensure_git_auth() -> None:
     subprocess.run(["git", "config", "user.name", os.getenv("GIT_AUTHOR_NAME", "Render Bot")], cwd=BASE_DIR, check=False)
     subprocess.run(["git", "config", "user.email", os.getenv("GIT_AUTHOR_EMAIL", "render-bot@users.noreply.github.com")], cwd=BASE_DIR, check=False)
-    subprocess.run(["git", "config", "credential.helper", "store"], cwd=BASE_DIR, check=False)
     subprocess.run(["git", "config", "core.askPass", ""], cwd=BASE_DIR, check=False)
 
     remote_url = os.getenv("GIT_REMOTE_URL")
@@ -44,29 +44,30 @@ def ensure_git_auth() -> None:
         except subprocess.CalledProcessError:
             remote_url = ""
 
-    token = os.getenv("GITHUB_TOKEN") or os.getenv("GH_TOKEN") or os.getenv("GIT_TOKEN")
-    username = os.getenv("GITHUB_ACTOR") or os.getenv("GIT_USERNAME") or "x-access-token"
-
-    if remote_url and token:
-        parsed = urlparse(remote_url)
-        if parsed.scheme and parsed.netloc and "@" not in parsed.netloc:
-            netloc = f"{username}:{token}@{parsed.netloc}"
-            remote_url = urlunparse(parsed._replace(netloc=netloc))
-            subprocess.run(["git", "remote", "set-url", "origin", remote_url], cwd=BASE_DIR, check=False)
-
     if remote_url:
         subprocess.run(["git", "config", "--global", "url.https://github.com/.insteadOf", "git@github.com:"], cwd=BASE_DIR, check=False)
 
 
+def require_publisher_token(authorization: Optional[str]) -> None:
+    expected_token = os.getenv("BLOG_PUBLISHER_TOKEN")
+    if not expected_token:
+        raise HTTPException(status_code=503, detail="Publicador não configurado.")
+
+    scheme, _, provided_token = (authorization or "").partition(" ")
+    if scheme.lower() != "bearer" or not secrets.compare_digest(provided_token, expected_token):
+        raise HTTPException(status_code=401, detail="Não autorizado.")
+
+
 def render_article_html(tema: str, titulo: str) -> str:
     hoje = datetime.now().strftime("%d/%m/%Y")
-    slug = slugify(titulo or tema)
+    safe_tema = escape(tema)
+    safe_titulo = escape(titulo)
     texto = "\n".join(
         [
-            f"<p class=\"text-gray-700\">Este artigo foi gerado automaticamente para o tema \"{tema}\".</p>",
+            f"<p class=\"text-gray-700\">Este artigo foi gerado automaticamente para o tema \"{safe_tema}\".</p>",
             "<p class=\"text-gray-700\">A proposta é oferecer uma página SEO com visual alinhado ao site da Bantubet, mantendo foco em leitura rápida, clareza e conversão.</p>",
             "<h2 class=\"text-2xl font-black mt-8 mb-3 text-black\">Resumo rápido</h2>",
-            f"<p class=\"text-gray-700\">{tema} é um tópico relevante para a audiência do blog e pode ser estruturado em forma de guia útil, destacando benefícios, contexto e próximos passos.</p>",
+            f"<p class=\"text-gray-700\">{safe_tema} é um tópico relevante para a audiência do blog e pode ser estruturado em forma de guia útil, destacando benefícios, contexto e próximos passos.</p>",
             "<h2 class=\"text-2xl font-black mt-8 mb-3 text-black\">Dicas de SEO</h2>",
             "<ul class=\"list-disc list-inside text-gray-700 space-y-2\"><li>Use um título curto e direto.</li><li>Inclua palavras-chave no início do texto.</li><li>Adicione links internos para páginas relacionadas.</li></ul>",
         ]
@@ -77,7 +78,7 @@ def render_article_html(tema: str, titulo: str) -> str:
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{titulo} | Bantubet Blog</title>
+    <title>{safe_titulo} | Bantubet Blog</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="icon" type="image/png" href="/icons/favicon.png" sizes="48x48">
     <style>
@@ -106,7 +107,7 @@ def render_article_html(tema: str, titulo: str) -> str:
     <main class="max-w-4xl mx-auto px-6 pt-28 pb-16">
         <article class="bg-gray-50 rounded-[2rem] p-8 md:p-12 border border-gray-100 shadow-sm">
             <p class="text-xs uppercase tracking-[0.35em] text-[#F5C300] font-black mb-4">Bantubet Blog</p>
-            <h1 class="text-4xl md:text-5xl font-black text-black leading-tight mb-4">{titulo}</h1>
+            <h1 class="text-4xl md:text-5xl font-black text-black leading-tight mb-4">{safe_titulo}</h1>
             <p class="text-sm text-gray-500 mb-8">Publicado em {hoje}</p>
             <div class="space-y-4 text-lg leading-8 text-gray-800">
                 {texto}
@@ -122,6 +123,10 @@ def create_article_file(tema: str, titulo: str) -> str:
     ARTIGOS_DIR.mkdir(parents=True, exist_ok=True)
     slug = slugify(titulo or tema)
     target = ARTIGOS_DIR / f"{slug}.html"
+    suffix = 2
+    while target.exists():
+        target = ARTIGOS_DIR / f"{slug}-{suffix}.html"
+        suffix += 1
     target.write_text(render_article_html(tema, titulo), encoding="utf-8")
     return f"artigos/{target.name}"
 
@@ -137,21 +142,15 @@ def update_blog_list(article_href: str, titulo: str) -> None:
         "<span class=\"text-xs uppercase tracking-[0.25em] text-[#F5C300] font-black\">Novo artigo</span>"
         "<h3 class=\"text-xl font-black mt-2 text-white\">{titulo}</h3>"
         "</a>"
-    ).format(href=article_href, titulo=titulo)
+    ).format(href=escape(article_href, quote=True), titulo=escape(titulo))
 
-    marker = "<p class=\"text-gray-300\">Página de blog em construção.</p>"
-    replacement = (
-        "<p class=\"text-gray-300 mb-8\">Página de blog em construção.</p>"
-        "<section class=\"mt-8\">"
-        "<h2 class=\"text-2xl font-black text-[#F5C300] mb-4\">Posts recentes</h2>"
-        "<div class=\"space-y-3\">{new_post}</div>"
-        "</section>"
-    ).format(new_post=new_post)
+    marker = '<section id="blog-posts" class="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-3">'
 
-    if marker in html:
-        html = html.replace(marker, replacement, 1)
-    else:
-        html = html.replace("</main>", f"<section class=\"mt-8\">...", 1)
+    if marker not in html:
+        raise ValueError("Marcador de artigos não encontrado em blog.html")
+
+    html = html.replace('<p id="blog-empty" class="text-gray-400">Ainda não existem artigos publicados.</p>', "", 1)
+    html = html.replace(marker, f"{marker}\n            {new_post}", 1)
 
     BLOG_FILE.write_text(html, encoding="utf-8")
 
@@ -182,6 +181,11 @@ def run_git_publish() -> dict:
     results = []
     env = os.environ.copy()
     env["GIT_TERMINAL_PROMPT"] = "0"
+    token = os.getenv("GITHUB_TOKEN") or os.getenv("GH_TOKEN") or os.getenv("GIT_TOKEN")
+    if token:
+        env["GIT_CONFIG_COUNT"] = "1"
+        env["GIT_CONFIG_KEY_0"] = "http.extraheader"
+        env["GIT_CONFIG_VALUE_0"] = f"AUTHORIZATION: bearer {token}"
 
     for command in commands:
         completed = subprocess.run(command, cwd=BASE_DIR, capture_output=True, text=True, env=env, check=False)
@@ -196,7 +200,8 @@ def run_git_publish() -> dict:
 
 
 @app.post("/gerar-artigo")
-def gerar_artigo(payload: GerarArtigoRequest):
+def gerar_artigo(payload: GerarArtigoRequest, authorization: Optional[str] = Header(default=None)):
+    require_publisher_token(authorization)
     tema = (payload.tema or "").strip()
     if not tema:
         raise HTTPException(status_code=400, detail="Informe o tema do artigo.")
