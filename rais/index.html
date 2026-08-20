@@ -773,6 +773,31 @@
 
 
     <script>
+  window.dataLayer = window.dataLayer || [];
+
+  function trackEvent(eventName, eventData) {
+    window.dataLayer.push({ event: eventName, ...eventData });
+  }
+
+  trackEvent('page_view', { page_path: window.location.pathname });
+
+  document.addEventListener('click', (event) => {
+    const link = event.target.closest('a[href]');
+    if (!link || link.getAttribute('aria-hidden') === 'true') return;
+
+    const href = link.href;
+    const eventName = href.includes('wa.me') || href.startsWith('mailto:')
+      ? 'support_click'
+      : href.includes('registo') || href.includes('affiliates')
+        ? 'cta_click'
+        : 'navigation_click';
+
+    trackEvent(eventName, {
+      link_host: link.hostname || 'local',
+      link_path: link.pathname,
+    });
+  });
+
   function startCountdown() {
     // Define o tempo da oferta (ex: 1 hora em segundos)
     let totalSeconds = 3600; 
