@@ -4,6 +4,13 @@ Data: 2026-08-20
 Âmbito: landing page, Blog, publicação de conteúdo, aquisição e operação digital.  
 Premissas: `bantubetangola.com` é o domínio canónico; a operação atua em Angola; compliance, licença, promoções e dados de contacto devem ser confirmados pelo responsável legal antes de publicação.
 
+## Arquitetura de publicação
+
+- **Render:** executa o agente FastAPI, recebe pedidos editoriais e mantém os secrets GitHub necessários para criar commits e fazer push.
+- **GitHub:** é a origem versionada do código e dos artigos publicados.
+- **Vercel:** serve a landing e o Blog e é atualizado através do webhook/integração ligada ao repositório.
+- **Segurança:** `GITHUB_TOKEN` deve existir apenas no Render; a Vercel não precisa desse token. `BLOG_PUBLISHER_TOKEN` deve permanecer no Render e ser usado somente para autorizar o endpoint editorial.
+
 ## Diagnóstico atual
 
 A landing é essencialmente HTML estático, com Tailwind via CDN e JavaScript inline. O Blog era referenciado em `rais/index.html`, mas o índice não existia. O publicador FastAPI gera artigos e altera ficheiros diretamente, sem autenticação, sem fila de publicação e com publicação Git dentro do pedido HTTP. Não existem testes, pipeline de qualidade, analytics ou um CMS.
@@ -90,5 +97,5 @@ Executar primeiro Penetração de mercado e estabilização operacional. Desenvo
 ## Estado de execução
 
 - **Entregue:** Blog versionado, publicação cumulativa, escaping, slugs únicos, autenticação do endpoint, proteção do token Git, redirect canónico, rewrites Vercel, SEO técnico, sitemap, robots, correções de links/WhatsApp e smoke tests.
-- **Pendente:** configuração dos secrets no ambiente, deploy e testes live, confirmação legal de claims/contactos/termos, analytics/Search Console, CI/CD com preview/rollback e publicação assíncrona.
+- **Pendente:** confirmar secrets e webhook no Render/Vercel, confirmação legal de claims/contactos/termos, analytics/Search Console, CI/CD com preview/rollback e publicação assíncrona.
 - **Próximo gate:** só avançar para crescimento e diversificação depois de o deploy live passar os critérios P0 e os responsáveis confirmarem compliance.
