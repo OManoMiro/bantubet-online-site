@@ -60,6 +60,7 @@ def require_publisher_token(authorization: Optional[str]) -> None:
 
 def render_article_html(tema: str, titulo: str) -> str:
     hoje = datetime.now().strftime("%d/%m/%Y")
+    slug = slugify(titulo or tema)
     safe_tema = escape(tema)
     safe_titulo = escape(titulo)
     texto = "\n".join(
@@ -78,6 +79,8 @@ def render_article_html(tema: str, titulo: str) -> str:
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="{safe_titulo} | Guias e novidades da Bantubet Angola.">
+    <link rel="canonical" href="https://www.bantubetangola.com/artigos/{slug}.html">
     <title>{safe_titulo} | Bantubet Blog</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="icon" type="image/png" href="/icons/favicon.png" sizes="48x48">
