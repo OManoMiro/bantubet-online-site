@@ -97,5 +97,6 @@ Executar primeiro Penetração de mercado e estabilização operacional. Desenvo
 ## Estado de execução
 
 - **Entregue:** Blog versionado, publicação cumulativa, escaping, slugs únicos, autenticação do endpoint, proteção do token Git, redirect canónico, rewrites Vercel, SEO técnico, sitemap, robots, correções de links/WhatsApp e smoke tests.
-- **Pendente:** confirmar secrets e webhook no Render/Vercel, confirmação legal de claims/contactos/termos, analytics/Search Console, CI/CD com preview/rollback e publicação assíncrona.
+- **Pendente:** confirmação legal de claims/contactos/termos, analytics/Search Console, CI/CD com preview/rollback e publicação assíncrona.
+- **Concluído operacionalmente:** token GitHub antigo revogado, novo token criado no Render e novo hook Vercel ligado para atualizações.
 - **Próximo gate:** só avançar para crescimento e diversificação depois de o deploy live passar os critérios P0 e os responsáveis confirmarem compliance.
