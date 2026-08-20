@@ -15,7 +15,7 @@ class SiteSmokeTests(unittest.TestCase):
             'name="description"',
             'rel="canonical"',
             'application/ld+json',
-            'https://bantubetangola.com/',
+            'https://www.bantubetangola.com/',
         ):
             self.assertIn(marker, html)
         self.assertNotIn('href="#"', html)
@@ -28,13 +28,13 @@ class SiteSmokeTests(unittest.TestCase):
     def test_crawling_files_are_valid(self):
         ElementTree.parse(RAIS / "sitemap.xml")
         robots = (RAIS / "robots.txt").read_text(encoding="utf-8")
-        self.assertIn("Sitemap: https://bantubetangola.com/sitemap.xml", robots)
+        self.assertIn("Sitemap: https://www.bantubetangola.com/sitemap.xml", robots)
 
     def test_vercel_routes_are_present(self):
         config = json.loads((ROOT / "vercel.json").read_text(encoding="utf-8"))
         redirects = config["redirects"]
         rewrites = config["rewrites"]
-        self.assertTrue(any(item.get("permanent") and item.get("destination", "").startswith("https://bantubetangola.com") for item in redirects))
+        self.assertTrue(any(item.get("permanent") and item.get("destination", "").startswith("https://www.bantubetangola.com") for item in redirects))
         destinations = {item["destination"] for item in rewrites}
         self.assertIn("/rais/index.html", destinations)
         self.assertIn("/rais/blog.html", destinations)
