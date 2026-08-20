@@ -85,7 +85,6 @@ def render_article_html(tema: str, titulo: str) -> str:
     <link rel="canonical" href="https://www.bantubetangola.com/artigos/{slug}.html">
     <title>{safe_titulo} | Bantubet Blog</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="icon" type="image/png" href="/icons/favicon.png" sizes="48x48">
     <style>
         body {{ font-family: 'Inter', sans-serif; }}
     </style>
@@ -95,7 +94,7 @@ def render_article_html(tema: str, titulo: str) -> str:
         <div class="max-w-7xl mx-auto px-4 md:px-6 h-20 flex items-center justify-between">
             <div class="flex items-center gap-3">
                 <a href="/index.html" class="relative group">
-                    <img src="/images/logo-bantubet.png" alt="Bantubet" class="h-10 md:h-12 w-auto brightness-110">
+                    <span class="text-2xl font-black text-[#F5C300]">Bantubet</span>
                     <div class="absolute -inset-1 bg-[#F5C300] rounded-full blur opacity-20 group-hover:opacity-40 transition"></div>
                 </a>
             </div>
