@@ -7,6 +7,7 @@ from html import escape
 from datetime import datetime
 from pathlib import Path
 from typing import Optional
+from xml.etree import ElementTree
 
 from fastapi import FastAPI, Header, HTTPException
 from pydantic import BaseModel
@@ -16,6 +17,7 @@ BASE_DIR = Path(__file__).resolve().parent
 RAIS_DIR = BASE_DIR / "rais"
 ARTIGOS_DIR = RAIS_DIR / "artigos"
 BLOG_FILE = RAIS_DIR / "blog.html"
+SITEMAP_FILE = RAIS_DIR / "sitemap.xml"
 
 app = FastAPI(title="Bantubet Blog Publisher Agent")
 
@@ -158,6 +160,24 @@ def update_blog_list(article_href: str, titulo: str) -> None:
     BLOG_FILE.write_text(html, encoding="utf-8")
 
 
+def update_sitemap(article_href: str) -> None:
+    if not SITEMAP_FILE.exists():
+        raise FileNotFoundError("sitemap.xml não encontrado")
+
+    namespace = "http://www.sitemaps.org/schemas/sitemap/0.9"
+    ElementTree.register_namespace("", namespace)
+    tree = ElementTree.parse(SITEMAP_FILE)
+    root = tree.getroot()
+    article_url = f"https://www.bantubetangola.com/{article_href}"
+
+    existing_urls = {element.text for element in root.findall(f"{{{namespace}}}url/{{{namespace}}}loc")}
+    if article_url not in existing_urls:
+        url_element = ElementTree.SubElement(root, f"{{{namespace}}}url")
+        loc_element = ElementTree.SubElement(url_element, f"{{{namespace}}}loc")
+        loc_element.text = article_url
+        tree.write(SITEMAP_FILE, encoding="utf-8", xml_declaration=True)
+
+
 def run_git_publish() -> dict:
     ensure_git_auth()
 
@@ -212,6 +232,7 @@ def gerar_artigo(payload: GerarArtigoRequest, authorization: Optional[str] = Hea
     titulo = (payload.titulo or tema).strip()
     href = create_article_file(tema, titulo)
     update_blog_list(href, titulo)
+    update_sitemap(href)
 
     git_result = run_git_publish()
     return {
