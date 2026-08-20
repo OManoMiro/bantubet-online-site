@@ -10,7 +10,7 @@ from typing import Optional
 from xml.etree import ElementTree
 
 from fastapi import FastAPI, Header, HTTPException
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 import subprocess
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -23,8 +23,8 @@ app = FastAPI(title="Bantubet Blog Publisher Agent")
 
 
 class GerarArtigoRequest(BaseModel):
-    tema: str
-    titulo: Optional[str] = None
+    tema: str = Field(min_length=1, max_length=200)
+    titulo: Optional[str] = Field(default=None, max_length=140)
 
 
 def slugify(text: str) -> str:
